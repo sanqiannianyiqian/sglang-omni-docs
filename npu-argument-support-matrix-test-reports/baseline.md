@@ -42,7 +42,7 @@
 | thinker_cuda_graph                    | "default"     | default\|on\|off                                  |     | [√]        | — |
 | talker_cuda_graph                      | "default"     | default\|on\|off                                  |     | [x]       | — |
 | talker_partial_start                      | "default"     | default\|on\|off                                  |     |           | [√] 已支持；实际字段 `enable_partial_start`，第 5 个片段即启动，开关对照与音频输出通过（[报告](talker_partial_start.md)） |
-| thinker_torch_compile               | "default"     | default\|on\|off                                  |     |           | 需要开发支持；配置可传递，所测 NPU 编译路径未通过（[报告](thinker_torch_compile.md)） |
+| thinker_torch_compile               | "default"     | default\|on\|off                                  |     |       [x]     | 不需要开发支持；dynamo崩溃（torch_npu不支持NPU），采用拦截告警方式处理（[报告](thinker_torch_compile.md)（[PR]([thinker_torch_compile.md](https://github.com/sgl-project/sglang-omni/pull/2104)） |
 | talker_torch_compile                  | "default"     | default\|on\|off                                  |     |           | 需要开发支持；配置可传递，所测 NPU 编译路径未通过（[报告](talker_torch_compile.md)） |
 | thinker_torch_compile_max_bs   | None          | int                                               |     |           | 需要开发支持；依赖的编译路径未通过，批大小边界无法验证（[报告](thinker_torch_compile_max_bs.md)） |
 | talker_torch_compile_max_bs     | None          | int                                               |     |           | 需要开发支持；依赖的编译路径未通过，批大小边界无法验证（[报告](talker_torch_compile_max_bs.md)） |
