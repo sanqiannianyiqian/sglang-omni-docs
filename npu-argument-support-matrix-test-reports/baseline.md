@@ -4,15 +4,15 @@
 - 来源：[Issue #1597](https://github.com/sgl-project/sglang-omni/issues/1597)
 - 汇总更新日期：2026-09-30
 - 本文性质：上游矩阵快照与同目录已完成的参数实测报告汇总；本次更新未重新执行 NPU 测试。
-- 已收录报告：23 项，其中 16 项已支持（含报告注明的验证范围与限制）、6 项需要开发支持、1 项已删除而无需支持。
+- 已收录报告：18 项，其中 11 项已支持（含报告注明的验证范围与限制）、6 项需要开发支持、1 项已删除而无需支持。
 
-## 上游矩阵与参数支持验证
+## 上游矩阵与我们的参数支持
 
 以下保留 Issue 原始列、默认值及标记。原 `supported` 列中的 `[√]`、`[x]` 和空白均为来源标记，不额外推断 UT 或端到端测试结果。参数默认值可能随代码版本改变，应以测试 commit 为准。
 
-“参数支持验证”列依据同目录实测报告填写，每项结论链接到对应报告。`[√] 已支持` 仅表示报告所述版本、模型、配置与验证范围内的支持，不等于所有场景端到端通过；“需要开发支持”表示所测版本尚不可用；`[x] 无需支持` 表示字段已删除；`—` 表示本目录暂无该参数的独立报告。矩阵沿用原任务名，实际配置字段以报告为准。
+新增的“我们的参数支持”列依据同目录实测报告填写，每项结论链接到对应报告。`[√] 已支持` 仅表示报告所述版本、模型、配置与验证范围内的支持，不等于所有场景端到端通过；“需要开发支持”表示所测版本尚不可用；`[x] 无需支持` 表示字段已删除；`—` 表示本目录暂无该参数的独立报告。矩阵沿用原任务名，实际配置字段以报告为准。
 
-| Args                           | Default value | Options                                           | UTs | supported | 参数支持验证 |
+| Args                           | Default value | Options                                           | UTs | supported | 我们的参数支持 |
 | ------------------------------ | ------------- | ------------------------------------------------- | --- | --------- | --- |
 | model_path                                  | None          | str                                               |     | [√]        | — |
 | config                                           | None          | str                                               |     | [√]        | — |
@@ -24,13 +24,13 @@
 | port                                              | 8000           | int                                               |     | [√]        | — |
 | model_name                                | None          | str                                               |     | [√] | — |
 | allowed_local_media_path           | None          | str                                               |     | [√] | — |
-| allowed_media_domain               | None          | list[str]                                         |     |           | [√] 已支持；Fun-CosyVoice3 域名允许/拒绝、默认行为及拒绝后合法音频生成通过（[报告](allowed_media_domain.md)） |
-| tts_batch_max_items                    | 32               | int                                               |     |           | [√] 已支持；Fun-CosyVoice3 自定义上限 2/3、默认上限 32 的数量边界与合法批量生成通过，不代表音频逐字正确（[报告](tts_batch_max_items.md)） |
-| mem_fraction_static                     | None          | float                                             |     |           | [√] 已支持；Fun-CosyVoice3 关闭图执行时，默认及显式比例的 KV 分配与音频生成通过，非进程总内存硬上限（[报告](mem_fraction_static.md)） |
-| thinker_mem_fraction_static        | None          | float                                             |     |           | [√] 已支持；Qwen3-Omni 关闭图执行、TP=2 时，两个 Thinker 进程的 KV 分配及文字/音频生成通过（实际入口 `--thinker.engine.mem_fraction_static`）（[报告](thinker_mem_fraction_static.md)） |
-| talker_mem_fraction_static          | None          | float                                             |     |           | [√] 已支持；Qwen3-Omni 关闭图执行时，Talker KV 分配与音频生成通过，共卡可用内存仍影响容量（实际入口 `--talker_ar.engine.mem_fraction_static`）（[报告](talker_mem_fraction_static.md)） |
-| encoder_mem_reserve                | None          | float                                             |     |           |  |
-| cpu_offload_gb                           | None          | int                                               |     |           |  |
+| allowed_media_domain               | None          | list[str]                                         |     |           | — |
+| tts_batch_max_items                    | 32               | int                                               |     |           | — |
+| mem_fraction_static                     | None          | float                                             |     |           | — |
+| thinker_mem_fraction_static        | None          | float                                             |     |           | — |
+| talker_mem_fraction_static          | None          | float                                             |     |           | — |
+| encoder_mem_reserve                | None          | float                                             |     |           | [√] 已支持；NPU 参数逻辑验证通过，未做 Qwen3-Omni thinker 端到端（[报告](encoder_mem_reserve.md)） |
+| cpu_offload_gb                           | None          | int                                               |     |           | [√] 已支持；卸载器与带参启动验证通过，生成闭环受编译器环境问题阻断（[报告](cpu_offload_gb.md)） |
 | quantization                                | None          | str                                               |     | [x]       | — |
 | log_level                                      | "info"   | ["debug", "info", "warning", "error", "critical"] |     | [√]        | — |
 | thinker_tp_size                            | None          | int                                               |     | [√]        | — |
@@ -42,12 +42,12 @@
 | thinker_cuda_graph                    | "default"     | default\|on\|off                                  |     | [√]        | — |
 | talker_cuda_graph                      | "default"     | default\|on\|off                                  |     | [x]       | — |
 | talker_partial_start                      | "default"     | default\|on\|off                                  |     |           | [√] 已支持；实际字段 `enable_partial_start`，第 5 个片段即启动，开关对照与音频输出通过（[报告](talker_partial_start.md)） |
-| thinker_torch_compile               | "default"     | default\|on\|off                                  |     |           | 需要开发支持；配置可传递，所测 NPU 编译路径未通过（[报告](thinker_torch_compile.md)） |
-| talker_torch_compile                  | "default"     | default\|on\|off                                  |     |           | 需要开发支持；配置可传递，所测 NPU 编译路径未通过（[报告](talker_torch_compile.md)） |
-| thinker_torch_compile_max_bs   | None          | int                                               |     |           | 需要开发支持；依赖的编译路径未通过，批大小边界无法验证（[报告](thinker_torch_compile_max_bs.md)） |
-| talker_torch_compile_max_bs     | None          | int                                               |     |           | 需要开发支持；依赖的编译路径未通过，批大小边界无法验证（[报告](talker_torch_compile_max_bs.md)） |
-| torch_compile                             | "default"     | default\|on\|off                                  |     |           | 需要开发支持；广播配置可传递，所测 NPU 编译路径未通过（[报告](torch_compile.md)） |
-| torch_compile_max_bs                | None          | int                                               |     |           | 需要开发支持；广播配置可传递，依赖的编译路径未通过（[报告](torch_compile_max_bs.md)） |
+| thinker_torch_compile               | "default"     | default\|on\|off                                  |     |    [x]     | 不需要开发支持；dynamo里崩溃（torch_npu里不支持NPU），采用拦截告警方式处理（[报告](thinker_torch_compile.md) （[PR]([thinker_torch_compile.md](https://github.com/sgl-project/sglang-omni/pull/2104))） |
+| talker_torch_compile                  | "default"     | default\|on\|off                                  |     |      [x]    | 不需要开发支持；dynamo里崩溃（torch_npu里不支持NPU），采用拦截告警方式处理（[报告](talker_torch_compile.md)）（[PR]([thinker_torch_compile.md](https://github.com/sgl-project/sglang-omni/pull/2104)) |
+| thinker_torch_compile_max_bs   | None          | int                                               |     |       [x]    | 不需要开发支持；dynamo里崩溃（torch_npu里不支持NPU），采用拦截告警方式处理（[报告](thinker_torch_compile_max_bs.md)）（[PR]([thinker_torch_compile.md](https://github.com/sgl-project/sglang-omni/pull/2104)) |
+| talker_torch_compile_max_bs     | None          | int                                               |     |    [x]       | 不需要开发支持；dynamo里崩溃（torch_npu里不支持NPU），采用拦截告警方式处理（[报告](talker_torch_compile_max_bs.md)）（[PR]([thinker_torch_compile.md](https://github.com/sgl-project/sglang-omni/pull/2104) |
+| torch_compile                             | "default"     | default\|on\|off                                  |     |     [x]      | 不需要开发支持；dynamo里崩溃（torch_npu里不支持NPU），采用拦截告警方式处理（[报告](torch_compile.md)）（[PR]([thinker_torch_compile.md](https://github.com/sgl-project/sglang-omni/pull/2104) |
+| torch_compile_max_bs                | None          | int                                               |     |    [x]       | 不需要开发支持；dynamo里崩溃（torch_npu里不支持NPU），采用拦截告警方式处理（[报告](torch_compile_max_bs.md)）（[PR]([thinker_torch_compile.md](https://github.com/sgl-project/sglang-omni/pull/2104) |
 | enable_realtime                           | FALSE         | bool                                              |     |           | — |
 | decode_mode                              | None          | str                                               |     |           | [x] 无需支持；字段已删除，现行配置明确拒绝旧字段（[报告](decode_mode.md)） |
 | async_lookahead_min_batch_size | None          | int                                               |     |           | [√] 已支持对应门槛功能；实测字段为 `async_decode_min_batch_size`，不代表原任务名可用于配置，未证实稳定加速（[报告](async_lookahead_min_batch_size.md)） |
@@ -56,7 +56,7 @@
 | prefill_coalesce_wait_ms               | None          | float                                             |     |           | [√] 已支持；TP=1 配对凑批参数验证到期放行，TP>1 时不参与判断（[报告](prefill_coalesce_wait_ms.md)） |
 | max_running_requests                  | None          | int                                               |     |           | [√] 已支持；thinker / talker_ar 限流、超限排队与阶段隔离通过（[报告](max_running_requests.md)） |
 | max_queued_requests                  | None          | int                                               |     |           | [√] 已支持；超限拒绝与恢复通过，chat 接口返回 500，单独设置时限流层级与语义不同（[报告](max_queued_requests.md)） |
-| max_total_tokens                         | None          | int                                               |     |           | [√] 已支持；KV 池容量与准入生效，存在错误提示不准（[报告](max_total_tokens.md)） |
+| max_total_tokens                         | None          | int                                               |     |           | [√] 已支持；KV 池容量与准入生效，存在错误提示不准及池容量与上下文长度的配置校验缺口（[报告](max_total_tokens.md)） |
 | cuda_graph_max_bs                    | None          | int                                               |     | [√]        | — |
 
 ## Issue 中已有的验证反馈
